@@ -2,27 +2,33 @@
   "Returns a random item of list X"
   (nth (random (length x)) x))
 
+(defvar *object-pronouns* '(i he she it we they))
+(defvar *subject-pronouns* '(me him her it us them))
+(defvar *articles* '(a the))
+
 (defparameter *grammar1*
   '((sentence (np vp))
-    (np (article adj* noun pp*) (name) (pronoun))
+    (np (article adj* noun pp*) (proper-noun) (pronoun))
     (vp (verb np pp*))
     (pp* () (pp pp*))
     (adj* () (adj adj*))
     (pp (prep np))
     (prep to in by with on)
     (adj big little blue green smelly)
-    (article a the)
-    (name pat kim lee terry robin)
+    (article *articles*)
+    (proper-noun pat kim lee terry robin)
     (noun man ball woman table)
     (verb hit took saw liked)
-    (foo (article noun))
     (pronoun he she it these those that)))
 
 (defvar *grammar* *grammar1*)
 
 (defun constituents (phrase)
   "Returns the constituents of a grammar structure"
-  (rest (assoc phrase *grammar*)))
+  (let ((parts (rest (assoc phrase *grammar*))))
+    (if (and (atom (cdr parts)) (boundp (first parts)))
+      (eval '(first parts))
+      parts)))
 
 ;;; Kleene star: Represents any number of an item.
 (defun kleene-starp (phrase)
